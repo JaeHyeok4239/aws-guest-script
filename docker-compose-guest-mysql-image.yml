@@ -24,7 +24,7 @@ services:
     depends_on:
       - mysqlservice
     container_name: docker_compose_guest_container
-    image: academyitwill/guest # 도커 허브에서 앱 이미지 사용
+    image: academyitwill/guest-app # 도커 허브에서 앱 이미지 사용
     environment:
       SPRING_PROFILES_ACTIVE: mysql-prod-group   # ★ 프로필 분리됨
     ports:
