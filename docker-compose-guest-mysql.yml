@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: jdeveloper
       TZ: Asia/Seoul
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_volume:/var/lib/mysql
       - ./001.mysql-init.sql:/docker-entrypoint-initdb.d/001.mysql-init.sql
