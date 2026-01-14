@@ -26,7 +26,7 @@ services:
     container_name: docker_compose_guest_container
     build:
       context: ./
-      dockerfile: DockerfileGuest
+      dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: mysql-prod-group   # ★ 프로필 분리됨
     ports:
