@@ -101,7 +101,7 @@ pipeline {
                         echo "[EC2] 기존 컨테이너 down"
                         docker compose -f ${DOCKER_COMPOSE_FILE} down || true
 
-                    echo "[EC2] 기존 이미지 삭제 (compose에서 사용하는 이미지만)"
+                        echo "[EC2] 기존 이미지 삭제 (compose에서 사용하는 이미지만)"
                         IMAGES=\$(docker compose -f ${DOCKER_COMPOSE_FILE} images -q || true)
                         if [ -n "\$IMAGES" ]; then
                             echo "[EC2] 삭제할 이미지: \$IMAGES"
