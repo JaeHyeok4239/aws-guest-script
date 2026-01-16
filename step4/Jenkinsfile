@@ -21,7 +21,8 @@ pipeline {
         EC2_HOST='15.164.228.132'
         EC2_APP_DIR='/home/ubuntu/aws-guest-script'
         STEP_NUM='step4'
-        DOCKER_COMPOSE_FILE='docker-compose-guest-mysql-image.yml'
+        DOCKER_COMPOSE_MYSQL_FILE='docker-compose-mysql-image.yml'
+        DOCKER_COMPOSE_GUEST_FILE='docker-compose-guest-image.yml'
         //DOCKER_COMPOSE_FILE='docker-compose-guest-mysql.yml'
         // Jenkins → Credentials → SSH Username with private key
         EC2_SSH_CREDENTIALS   = 'deploy-ssh-key'
@@ -76,13 +77,22 @@ else
 fi
 
 echo "[EC2][BLUE] docker-compose pull (이미지 갱신)"
-docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_FILE} pull || true
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_MYSQL_FILE} pull || true
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_GUEST_FILE} pull || true
 
 echo "[EC2][BLUE] 기존 컨테이너 down"
-docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_FILE} down || true
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_MYSQL_FILE} down || true
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_GUEST_FILE} down || true
 
 echo "[EC2][BLUE] 기존 이미지 삭제 (compose에서 사용하는 이미지만)"
-IMAGES=$(docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_FILE} images -q || true)
+IMAGES=$(docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_MYSQL_FILE} images -q || true)
+if [ -n "$IMAGES" ]; then
+    echo "[EC2][BLUE]  삭제할 이미지: $IMAGES"
+    docker rmi $IMAGES || true
+else
+    echo "[EC2][BLUE] 삭제할 이미지 없음"
+fi
+IMAGES=$(docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_GUEST_FILE} images -q || true)
 if [ -n "$IMAGES" ]; then
     echo "[EC2][BLUE]  삭제할 이미지: $IMAGES"
     docker rmi $IMAGES || true
@@ -90,14 +100,17 @@ else
     echo "[EC2][BLUE] 삭제할 이미지 없음"
 fi
 
+
 echo "[EC2][BLUE]  Dangling 이미지 정리"
 docker image prune -f || true
 
 echo "[EC2][BLUE] 새로운 컨테이너 up -d"
-docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_FILE} up -d
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_MYSQL_FILE} up -d
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_GUEST_FILE} up -d
 
 echo "[EC2][BLUE] 컨테이너 상태 확인"
-docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_FILE} ps
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_MYSQL_FILE} ps
+docker compose -f ./${STEP_NUM}/deploy/blue/${DOCKER_COMPOSE_GUEST_FILE} ps
 
 EOF
 '''
