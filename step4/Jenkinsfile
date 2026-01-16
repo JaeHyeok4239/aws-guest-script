@@ -118,7 +118,8 @@ EOF
                 }
             }
             
-            stage('Green 자동배포 시작') {
+            stage('Green 자동배포 시작') {+99
+            2
                 steps {
                     input message: '자동배포 시작', ok: "Yes"
                 }
