@@ -26,6 +26,7 @@ pipeline {
         DOCKER_COMPOSE_FILE='docker-compose-guest-mysql-image.yml'
         //DOCKER_COMPOSE_FILE='docker-compose-guest-mysql.yml'
         // Jenkins → Credentials → SSH Username with private key
+        GITHUB_CREDENTIALS='github-credentials'
         EC2_SSH_CREDENTIALS   = 'deploy-ssh-key'
         // Jenkins → Credentials → Username with password (DockerHub 로그인용)
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
@@ -36,12 +37,19 @@ pipeline {
          ***********************/
         stage('Source Build[/guest-backend]') {
             steps {
-               checkout scmGit(
-                        branches: [[name: '*/main']],
-                        extensions: [[$class: 'SparseCheckoutPaths',
-                                     sparseCheckoutPaths: [[path: "/guest_backend"]]]],
-                                     userRemoteConfigs: [[url: "${GITHUB_SOURCE_URL}"]]
-                        )
+               checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: "${GITHUB_SOURCE_URL}",
+                        credentialsId: env.GITHUB_CREDENTIALS
+                    ]],
+                    extensions: [
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [
+                            [path: 'guest_backend/']
+                        ]]
+                    ]
+                ])
                 sh "chmod +x ./gradlew"
                 sh "./gradlew clean build"
             }
