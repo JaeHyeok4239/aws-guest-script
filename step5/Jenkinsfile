@@ -42,19 +42,21 @@ pipeline {
         stage('Docker File Checkout Docker Build & Push') {
             steps {
                  echo "==== Source Checkout (guest_backend) 시작 ===="
-            checkout([
-                $class: 'GitSCM',
-                branches: [[name: '*/main']],
-                userRemoteConfigs: [[
-                    url: "${GITHUB_SOURCE_URL}",
-                    credentialsId: env.GITHUB_CREDENTIALS
-                ]],
-                extensions: [
-                    [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [
-                        [path: 'guest_backend/']
-                    ]]
-                ]
-            ])
+            dir('source') {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: "${GITHUB_SOURCE_URL}",
+                        credentialsId: env.GITHUB_CREDENTIALS
+                    ]],
+                    extensions: [
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [
+                            [path: 'guest_backend/']
+                        ]]
+                    ]
+                ])
+            }
              echo "==== Source Checkout 완료 ===="
                echo "==== Git Checkout 시작 ===="
                checkout scmGit(
