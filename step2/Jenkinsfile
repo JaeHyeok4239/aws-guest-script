@@ -15,11 +15,11 @@ pipeline {
     environment {
        // ===== Git Repositories =====
         GITHUB_SCRIPT_URL = "https://github.com/JaeHyeok4239/aws-guest-script.git"
-        GITHUB_SOURCE_URL = "https://github.com/${GITHUB_USERNAME}/aws-guest-source.git"
+        GITHUB_SOURCE_URL = "https://github.com/JaeHyeok4239/aws-guest-source.git"
         
        // ===== EC2 =====
         EC2_USER='ubuntu'
-        EC2_HOST='15.164.228.132'
+        EC2_HOST='3.35.78.163'
         EC2_APP_DIR='/home/ubuntu/aws-guest-script'
         STEP_NUM='step2'
         DOCKER_COMPOSE_FILE='docker-compose-guest-mysql-image.yml'
